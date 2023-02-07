@@ -49,8 +49,7 @@ RUN pip3 install PyOpenGL \
 RUN mkdir /f1tenth_gym
 COPY . /f1tenth_gym
 
-RUN cd /f1tenth_gym && \
-    pip3 install -e .
+RUN cd /f1tenth_gym && pip3 install -e . && pip3 install -r requirements.txt
 
 WORKDIR /f1tenth_gym
 

@@ -3,6 +3,20 @@
 This repository contains code associated with [A Benchmark Comparison of Imitation Learning-based Control Policies for Autonomous Racing
 ](https://arxiv.org/abs/2209.15073)
 
+## Docker
+Build and run.
+```bash
+cd f1tenth_il
+docker build -t f1tenth_il_docker .
+docker run -it --rm -e DISPLAY=$DISPLAY:0 f1tenth_il_docker
+```
+
+Note: use pip3 and python3 inside container. Example:
+Example:
+```bash
+python3 train.py --algorithm=hdagger --training_config=il_config.yaml
+```
+
 ## Quickstart
 Clone this repository
 ```bash
