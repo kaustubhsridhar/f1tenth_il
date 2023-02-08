@@ -18,17 +18,15 @@ def process_parsed_args():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--training_config', type=str, default='il_config.yaml', help='the yaml file containing the training configuration')
     arg_parser.add_argument('--model_path', type=str, required=True, help='path to the model for inference')
-    arg_parser.add_argument('--map_config_location', type=str, default = 'map/example_map/config_example_map.yaml', help='path to the map config')    
     return arg_parser.parse_args()
 
 if __name__ == '__main__':
     parsed_args = process_parsed_args()
 
-    model_path = parsed_args.model_pathx
+    model_path = parsed_args.model_path
 
     yaml_loc = parsed_args.training_config
     il_config = yaml.load(open(yaml_loc), Loader=yaml.FullLoader)
-    il_config['environment']['map_config_location'] = parsed_args.map_config_location
 
     model_type = il_config['policy_type']['agent']['model']
 

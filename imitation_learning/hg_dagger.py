@@ -12,7 +12,7 @@ from dataset import Dataset
 from bc import bc
 from pathlib import Path
 
-def hg_dagger(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, vgain_scales=[1.0]):
+def hg_dagger(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode):
     algo_name = "HGDAgger"
     best_model = agent
     longest_distance_travelled = 0

@@ -35,3 +35,19 @@ def plot_experts(map_name = 'config_example_map', vgain_scales=[0.5, 1.0, 2.0, 3
     plt.show()
 
 
+def plot_imitation(map_name = 'config_example_map', algo_name = 'BehavioralCloning', types=['unique_slow', 'unique_normal', 'unique_fast'], x_lo=None, x_up=None, y_lo=None, y_up=None):
+    fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+    trajs = {}
+    for type in types:
+        with open(f'logs/{map_name}_{algo_name}_{type}_model.pkl', 'rb') as f:
+            trajs[type] = pickle.load(f)
+        ax.plot(trajs[type]["poses_x"], trajs[type]["poses_y"], label=type.replace('_', ' '))
+    ax.set_xlabel('x position')
+    ax.set_ylabel('y position')
+    ax.set_title(f'Imitation policies learned by {algo_name} in {map_name}')
+    ax.legend()
+    if x_lo is not None and x_up is not None:
+        ax.set_xlim(x_lo, x_up)
+    if y_lo is not None and y_up is not None:
+        ax.set_ylim(y_lo, y_up)
+    plt.show()

@@ -12,6 +12,6 @@ from bc import bc
 
 from pathlib import Path
 
-def dagger(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, vgain_scales=[1.0]):
+def dagger(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, vgain_scales, map_name, config_name):
     # TODO 
     return 

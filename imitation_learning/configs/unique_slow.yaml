@@ -3,7 +3,7 @@ random_seed: 0
 environment:
   # # Example map will be loaded if map_config_location is empty while random_generation is false
   random_generation: false
-  map_config_location: map/example_map/config_example_map.yaml # commented to do multiple maps in each run.
+  # map_config_location: map/example_map/config_example_map.yaml
   render: false  # More samples will be taken for evaluation if render is false, which allows calculation of means and stdev (render should be False for proper evaluation)
   render_mode: human_fast # human or human_fast
 # Agent and expert policies
@@ -18,5 +18,5 @@ policy_type:
   # TODO: YAML config for Transformer 
   expert:
     behavior: waypoint_follower
-    vgain_scales: [0.5, 1.0, 1.5] # only for many policies files
+    vgain_scales: [0.5, 0.5, 0.5] # only for many policies files
 

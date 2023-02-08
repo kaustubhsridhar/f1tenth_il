@@ -149,6 +149,21 @@ def save_log_and_model(log, agent, algo_name):
     model_path.parent.mkdir(parents=True, exist_ok=True) 
     torch.save(agent.state_dict(), model_path)
 
+def save_log_and_model_with_many_policies(log, agent, map_name, algo_name, detailed_info):
+    path = "logs/training"
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    # Save log
+    df = pd.DataFrame(log)
+    log_path = Path(path + f'/{map_name}_{algo_name}_{detailed_info}_log.csv')
+    log_path.parent.mkdir(parents=True, exist_ok=True)  
+    df.to_csv(log_path, index=False)
+
+    # Save model
+    model_path = Path(path + f'/{map_name}_{algo_name}_{detailed_info}_model.pkl')
+    model_path.parent.mkdir(parents=True, exist_ok=True) 
+    torch.save(agent.state_dict(), model_path)
+
 
 def check_ittc(ego_distance, linear_vels_x, ittc_threshold = 0.5, scan_num = 1080):
     """

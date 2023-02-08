@@ -41,24 +41,35 @@ pip install pandas==1.4.4 pyglet==1.5.11
 ```
 
 ## Usage
-### Collect Expert Trajectories
-Navigate to the imitation learning folder
+Navigate to the imitation learning folder for all of the following.
 ```bash
 cd imitation_learning
 ```
 
-Run experts for various vgain_scales (scales top speed).
+### Collect Expert Trajectories
+Run experts on various maps for various vgain_scales (scales top speed) with one file.
 ```bash
-python expert_inference.py --training_config=il_config.yaml --vgain_scale 1
+python expert_inference.py 
 ```
 
+### Training and Inference for Many Imitation Policies
+Train many imitation policies with both unique experts and mixture of experts.
+```bash
+nohup python -u train_many_policies.py --algorithm=bc --training_config=configs/mixed_seed_0.yaml > logs/mixed_seed_0.out &
+nohup python -u train_many_policies.py --algorithm=bc --training_config=configs/mixed_seed_1.yaml > logs/mixed_seed_1.out &
+nohup python -u train_many_policies.py --algorithm=bc --training_config=configs/mixed_seed_2.yaml > logs/mixed_seed_2.out &
+
+nohup python -u train_many_policies.py --algorithm=bc --training_config=configs/unique_slow.yaml > logs/unique_slow.out &
+nohup python -u train_many_policies.py --algorithm=bc --training_config=configs/unique_normal.yaml > logs/unique_normal.out &
+nohup python -u train_many_policies.py --algorithm=bc --training_config=configs/unique_fast.yaml > logs/unique_fast.out &
+```
+
+Collect trajectories for all of the above with one file.
+```bash
+python inference_for_many_policies.py 
+```
 
 ### Training
-Navigate to the imitation learning folder
-```bash
-cd imitation_learning
-```
-
 Execute the training script
 ```bash
 python train.py --algorithm=<algorithm name> --training_config=<yaml file location>
@@ -71,11 +82,6 @@ python train.py --algorithm=dagger --training_config=il_config.yaml
 
 
 ### Inference
-Navigate to the imitation learning folder
-```bash
-cd imitation_learning
-```
-
 Execute the inference script
 ```bash
 python inference.py --training_config=<yaml file location> --model_path=<model path>

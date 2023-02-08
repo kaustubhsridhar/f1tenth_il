@@ -2,6 +2,7 @@ from mimetypes import init
 import gym
 import torch
 import numpy as np
+import os 
 
 import utils.agent_utils as agent_utils
 import utils.expert_utils as expert_utils
@@ -11,7 +12,7 @@ from dataset import Dataset
 
 from pathlib import Path
 
-def bc(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, purpose, vgain_scales):
+def bc(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, purpose, vgain_scales, map_name, config_name):
     best_model_saving_threshold = 500000
 
     algo_name = "BehavioralCloning"
@@ -20,7 +21,8 @@ def bc(seed, agent, expert, env, start_pose, observation_shape, downsampling_met
 
 
     # For Sim2Real
-    path = "logs/{}".format(algo_name)
+    path = "logs/training"
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     num_of_saved_models = 0
 
     resume_poses = {} # store the resume poses for each of the many experts
@@ -89,7 +91,7 @@ def bc(seed, agent, expert, env, start_pose, observation_shape, downsampling_met
             if (log['Mean Distance Travelled'][-1] > 100):
                 curr_dist = log['Mean Distance Travelled'][-1]
                 current_expsamples = log['Number of Expert Queries'][-1]
-                model_path = Path(path + f'/{algo_name}_svidx_{str(num_of_saved_models)}_dist_{int(curr_dist)}_expsamp_{int(current_expsamples)}.pkl')
+                model_path = Path(path + f'/{map_name}_{algo_name}_{config_name}_svidx_{str(num_of_saved_models)}_dist_{int(curr_dist)}_expsamp_{int(current_expsamples)}.pkl')
                 model_path.parent.mkdir(parents=True, exist_ok=True) 
                 torch.save(agent.state_dict(), model_path)
                 num_of_saved_models += 1
@@ -192,4 +194,5 @@ def bc(seed, agent, expert, env, start_pose, observation_shape, downsampling_met
             return agent, log, dataset
 
     # Save log and the best model
-    agent_utils.save_log_and_model(log, best_model, algo_name)
+    vgain_scales_str = '-'.join([str(x) for x in vgain_scales])
+    agent_utils.save_log_and_model_with_many_policies(log, best_model, map_name, algo_name, config_name) # vgain_scales_str)

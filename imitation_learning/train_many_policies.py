@@ -16,9 +16,8 @@ from hg_dagger_many_experts import hg_dagger
 
 def process_parsed_args():
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('--algorithm', type=str, default='dagger', help='imitation learning algorithm to use')
-    arg_parser.add_argument('--training_config', type=str, default='il_config.yaml', help='the yaml file containing the training configuration')
-    arg_parser.add_argument('--map_config_location', type=str, default = 'map/example_map/config_example_map.yaml', help='path to the map config')    
+    arg_parser.add_argument('--algorithm', type=str, default='bc', help='imitation learning algorithm to use')
+    arg_parser.add_argument('--training_config', type=str, default='configs/unique_normal.yaml', help='the yaml file containing the training configuration')
     return arg_parser.parse_args()
 
 def initialization(il_config, seed):
@@ -79,33 +78,33 @@ def initialization(il_config, seed):
     return seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode
     
 
-def train(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, il_algo, vgain_scales):
+def train(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, il_algo, vgain_scales, map_name, config_name):
     if il_algo == 'bc':
-        bc(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, purpose='train', vgain_scales=vgain_scales)
+        bc(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, 'train', vgain_scales, map_name, config_name)
     elif il_algo == 'dagger':
-        dagger(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, vgain_scales=vgain_scales)
+        dagger(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, vgain_scales, map_name, config_name)
     elif il_algo == 'hg-dagger':
-        hg_dagger(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, vgain_scales=vgain_scales)
+        hg_dagger(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, vgain_scales, map_name, config_name)
     else:
         # TODO: Implement other IL algorithms (BC, HG DAgger, etc.)
         pass
 
 
-def imitation(algo, map_config_location, vgain_scales, seed = None):
+def imitation(map_config_location):
     # Parse the command line arguments
     parsed_args = process_parsed_args()
     
     # Load the training configuration
     il_config = yaml.load(open(parsed_args.training_config), Loader=yaml.FullLoader)
-    il_config['environment']['map_config_location'] = map_config_location 
+    il_config['environment']['map_config_location'] = map_config_location
+    map_name = il_config['environment']['map_config_location'].split('/')[-1].split('.yaml')[0]
+    config_name = parsed_args.training_config.replace('configs/', '').replace('.yaml', '')
 
     # Initialize
-    if seed is None:
-        seed = il_config['random_seed']
-    seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode = initialization(il_config, seed)
+    seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode = initialization(il_config, il_config['random_seed'])
 
     # Train
-    train(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, algo, vgain_scales)
+    train(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, parsed_args.algorithm, il_config['policy_type']['expert']['vgain_scales'], map_name, config_name)
     
 if __name__ == '__main__':
     all_map_locs = [
@@ -118,24 +117,31 @@ if __name__ == '__main__':
         # 'map/OG_maps/skirk.yaml',
         # 'map/OG_maps/strata_basement.yaml',
     ]
-    all_scales = [0.5, 1.0, 1.5]
-    all_seeds = [0, 2, 4]
-    all_algorithms = ['bc']#, 'dagger', 'hg-dagger']
+    # all_scales = [0.5, 1.0, 1.5]
+    # all_seeds = [0, 2, 4]
+    # all_algorithms = ['bc']#, 'dagger', 'hg-dagger']
 
-    print(f'----------------------------------------')
-    print(f'Unique expert imitation')
-    print(f'----------------------------------------')
-    for map_loc in all_map_locs:
-        for algorithm in all_algorithms:
-            for scale in all_scales:
-                print(f'********** map {map_loc} with {algorithm} and scale {scale} ********** (fixed: seed 0)')
-                imitation(algo=algorithm, map_config_location=map_loc, vgain_scales=[scale]*len(all_scales))
+    # print(f'----------------------------------------')
+    # print(f'Unique expert imitation')
+    # print(f'----------------------------------------')
+    # for map_loc in all_map_locs:
+    #     for algorithm in all_algorithms:
+    #         for scale in all_scales:
+    #             print(f'********** map {map_loc} with {algorithm} and scale {scale} ********** (fixed: seed 0)')
+    #             imitation(algo=algorithm, map_config_location=map_loc, vgain_scales=[scale]*len(all_scales))
             
-    print(f'----------------------------------------')
-    print(f'Mixed expert imitation')
-    print(f'----------------------------------------')
+    # print(f'----------------------------------------')
+    # print(f'Mixed expert imitation')
+    # print(f'----------------------------------------')
+    # for map_loc in all_map_locs:
+    #     for algorithm in all_algorithms:
+    #         for s in all_seeds:
+    #             print(f'********** map {map_loc} with {algorithm} and seed {s} (fixed: scales {all_scales}) **********')
+    #             imitation(algo=algorithm, map_config_location=map_loc, vgain_scales=all_scales, seed = s)
+
+    
     for map_loc in all_map_locs:
-        for algorithm in all_algorithms:
-            for s in all_seeds:
-                print(f'********** map {map_loc} with {algorithm} and seed {s} (fixed: scales {all_scales}) **********')
-                imitation(algo=algorithm, map_config_location=map_loc, vgain_scales=all_scales, seed = s)
+        print(f'****************************************')
+        print(f'********** map at {map_loc} **********')
+        print(f'****************************************')
+        imitation(map_loc)

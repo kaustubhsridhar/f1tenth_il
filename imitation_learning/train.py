@@ -18,7 +18,6 @@ def process_parsed_args():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--algorithm', type=str, default='dagger', help='imitation learning algorithm to use')
     arg_parser.add_argument('--training_config', type=str, default='il_config.yaml', help='the yaml file containing the training configuration')
-    arg_parser.add_argument('--map_config_location', type=str, default = 'map/example_map/config_example_map.yaml', help='path to the map config')    
     return arg_parser.parse_args()
 
 def initialization(il_config):
@@ -102,7 +101,6 @@ if __name__ == '__main__':
     yaml_loc = parsed_args.training_config
 
     il_config = yaml.load(open(yaml_loc), Loader=yaml.FullLoader)
-    il_config['environment']['map_config_location'] = parsed_args.map_config_location
 
     # Initialize
     seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode = initialization(il_config)
