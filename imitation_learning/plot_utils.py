@@ -17,7 +17,7 @@ plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 
-def plot_experts(x_lo, x_up, y_lo, y_up, map_name = 'config_example_map', vgain_scales=[0.5, 1.0, 2.0, 3.0]):
+def plot_experts(map_name = 'config_example_map', vgain_scales=[0.5, 1.0, 2.0, 3.0], x_lo=None, x_up=None, y_lo=None, y_up=None):
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))
     trajs = {}
     for vgain_scale in vgain_scales:
@@ -28,8 +28,10 @@ def plot_experts(x_lo, x_up, y_lo, y_up, map_name = 'config_example_map', vgain_
     ax.set_ylabel('y position')
     ax.set_title(f'Experts with different top speeds in {map_name}')
     ax.legend()
-    ax.set_xlim(x_lo, x_up)
-    ax.set_ylim(y_lo, y_up)
+    if x_lo is not None and x_up is not None:
+        ax.set_xlim(x_lo, x_up)
+    if y_lo is not None and y_up is not None:
+        ax.set_ylim(y_lo, y_up)
     plt.show()
 
 
