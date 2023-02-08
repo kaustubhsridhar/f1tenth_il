@@ -41,6 +41,18 @@ pip install pandas==1.4.4 pyglet==1.5.11
 ```
 
 ## Usage
+### Collect Expert Trajectories
+Navigate to the imitation learning folder
+```bash
+cd imitation_learning
+```
+
+Run experts for various vgain_scales (scales top speed).
+```bash
+python expert_inference.py --training_config=il_config.yaml --vgain_scale 1
+```
+
+
 ### Training
 Navigate to the imitation learning folder
 ```bash
