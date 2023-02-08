@@ -22,7 +22,7 @@ def process_parsed_args():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--training_config', default='il_config.yaml', help='the yaml file containing the training configuration')
     # arg_parser.add_argument('--vgain_scale', type=float, default=1, help='voltage gain scaler (increases top speed)')
-    # arg_parser.add_argument('--map_config_location', type=str, help='path to the map config')    
+    # arg_parser.add_argument('--map_config_location', type=str, default = 'map/example_map/config_example_map.yaml', help='path to the map config')    
     return arg_parser.parse_args()
 
 def expert_inference(map_config_location, vgain_scale):
@@ -118,7 +118,7 @@ def expert_inference(map_config_location, vgain_scale):
         pickle.dump(traj, f)
 
 if __name__ == "__main__":
-    configs = [
+    all_map_locs = [
         'map/example_map/config_example_map.yaml',
         'map/levine2nd/levine2nd_config.yaml',
         # 
@@ -128,6 +128,6 @@ if __name__ == "__main__":
         # 'map/OG_maps/skirk.yaml',
         # 'map/OG_maps/strata_basement.yaml',
     ]
-    for file_loc in configs:
-        for vg in [0.5, 1.0, 1.5]:
-            expert_inference(file_loc, vg)
+    for map_loc in all_map_locs:
+        for scale in [0.5, 1.0, 1.5]:
+            expert_inference(map_loc, scale)

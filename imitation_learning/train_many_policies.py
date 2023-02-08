@@ -9,9 +9,9 @@ from policies.experts.expert_waypoint_follower import ExpertWaypointFollower
 
 import utils.env_utils as env_utils
 
-from bc import bc
-from dagger import dagger
-from hg_dagger import hg_dagger
+from bc_many_experts import bc
+from dagger_many_experts import dagger
+from hg_dagger_many_experts import hg_dagger
 
 
 def process_parsed_args():
@@ -21,16 +21,14 @@ def process_parsed_args():
     arg_parser.add_argument('--map_config_location', type=str, default = 'map/example_map/config_example_map.yaml', help='path to the map config')    
     return arg_parser.parse_args()
 
-def initialization(il_config):
-    seed = il_config['random_seed']
-    # np.random.seed(seed)
+def initialization(il_config, seed):
+    # seed and device setup
+    np.random.seed(seed)
     torch.manual_seed(seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
     # Initialize the environment
     map_conf = None
-
     if il_config['environment']['random_generation'] == False:
         if il_config['environment']['map_config_location'] == None:
             # If no environment is specified but random generation is off, use the default gym environment
@@ -81,34 +79,63 @@ def initialization(il_config):
     return seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode
     
 
-def train(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode):
+def train(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, il_algo, vgain_scales):
     if il_algo == 'bc':
-        bc(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, purpose='train')
+        bc(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, purpose='train', vgain_scales=vgain_scales)
     elif il_algo == 'dagger':
-        dagger(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode)
+        dagger(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, vgain_scales=vgain_scales)
     elif il_algo == 'hg-dagger':
-        hg_dagger(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode)
+        hg_dagger(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, vgain_scales=vgain_scales)
     else:
         # TODO: Implement other IL algorithms (BC, HG DAgger, etc.)
         pass
 
 
-if __name__ == '__main__':
-    # Parse the command line arguments.
+def imitation(algo, map_config_location, vgain_scales, seed = None):
+    # Parse the command line arguments
     parsed_args = process_parsed_args()
     
-    # Process the parsed arguments.
-    il_algo = parsed_args.algorithm
-    yaml_loc = parsed_args.training_config
-
-    il_config = yaml.load(open(yaml_loc), Loader=yaml.FullLoader)
-    il_config['environment']['map_config_location'] = parsed_args.map_config_location
+    # Load the training configuration
+    il_config = yaml.load(open(parsed_args.training_config), Loader=yaml.FullLoader)
+    il_config['environment']['map_config_location'] = map_config_location 
 
     # Initialize
-    seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode = initialization(il_config)
+    if seed is None:
+        seed = il_config['random_seed']
+    seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode = initialization(il_config, seed)
 
     # Train
-    train(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode)
+    train(seed, agent, expert, env, start_pose, observation_shape, downsampling_method, render, render_mode, algo, vgain_scales)
+    
+if __name__ == '__main__':
+    all_map_locs = [
+        'map/example_map/config_example_map.yaml',
+        'map/levine2nd/levine2nd_config.yaml',
+        # 
+        # 'map/OG_maps/berlin.yaml',
+        # 'map/OG_maps/vegas.yaml',
+        # 'map/OG_maps/levine.yaml',
+        # 'map/OG_maps/skirk.yaml',
+        # 'map/OG_maps/strata_basement.yaml',
+    ]
+    all_scales = [0.5, 1.0, 1.5]
+    all_seeds = [0, 2, 4]
+    all_algorithms = ['bc']#, 'dagger', 'hg-dagger']
 
-    
-    
+    print(f'----------------------------------------')
+    print(f'Unique expert imitation')
+    print(f'----------------------------------------')
+    for map_loc in all_map_locs:
+        for algorithm in all_algorithms:
+            for scale in all_scales:
+                print(f'********** map {map_loc} with {algorithm} and scale {scale} ********** (fixed: seed 0)')
+                imitation(algo=algorithm, map_config_location=map_loc, vgain_scales=[scale]*len(all_scales))
+            
+    print(f'----------------------------------------')
+    print(f'Mixed expert imitation')
+    print(f'----------------------------------------')
+    for map_loc in all_map_locs:
+        for algorithm in all_algorithms:
+            for s in all_seeds:
+                print(f'********** map {map_loc} with {algorithm} and seed {s} (fixed: scales {all_scales}) **********')
+                imitation(algo=algorithm, map_config_location=map_loc, vgain_scales=all_scales, seed = s)
