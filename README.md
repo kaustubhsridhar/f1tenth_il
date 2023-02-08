@@ -3,20 +3,6 @@
 This repository contains code associated with [A Benchmark Comparison of Imitation Learning-based Control Policies for Autonomous Racing
 ](https://arxiv.org/abs/2209.15073)
 
-## Docker
-Build and run.
-```bash
-cd f1tenth_il
-docker build -t f1tenth_il_docker .
-docker run -it --rm -e DISPLAY=$DISPLAY:0 f1tenth_il_docker
-```
-
-Note: use pip3 and python3 inside container. Example:
-Example:
-```bash
-python3 train.py --algorithm=hdagger --training_config=il_config.yaml
-```
-
 ## Quickstart
 Clone this repository
 ```bash
@@ -30,12 +16,12 @@ cd f1tenth_il
 
 Create a new conda environment with Python 3.8
 ```bash
-conda create -n f110_il python=3.8
+conda create -n f1tenth python=3.8
 ```
 
 Activate the environment
 ```bash
-conda activate f110_il
+conda activate f1tenth
 ```
 
 Install pip
@@ -50,7 +36,8 @@ pip install -e .
 
 Install other dependencies
 ```bash
-pip install -r requirements.txt
+conda install pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
+pip install pandas==1.4.4 pyglet==1.5.11
 ```
 
 ## Usage
@@ -67,7 +54,7 @@ python train.py --algorithm=<algorithm name> --training_config=<yaml file locati
 
 Example:
 ```bash
-python train.py --algorithm=hg-dagger --training_config=il_config.yaml
+python train.py --algorithm=dagger --training_config=il_config.yaml
 ```
 
 

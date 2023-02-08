@@ -6,8 +6,8 @@ from argparse import Namespace
 
 from numba import njit
 
-from pyglet.gl import GL_POINTS
-
+# from pyglet.gl import GL_POINTS
+GL_POINTS = 0 # if I use above instead of this I get 'NoSuchDisplayException: Cannot connect to "None"'
 """
 Planner Helpers
 """
