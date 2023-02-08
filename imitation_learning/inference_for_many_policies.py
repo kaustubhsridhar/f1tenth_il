@@ -111,8 +111,8 @@ def inference(map_loc, training_config, model_path, seed):
 
 if __name__ == '__main__':
     all_map_locs = [
-        'map/example_map/config_example_map.yaml',
-        # 'map/levine2nd/levine2nd_config.yaml',
+        # 'map/example_map/config_example_map.yaml',
+        'map/levine2nd/levine2nd_config.yaml',
         # 
         # 'map/OG_maps/berlin.yaml',
         # 'map/OG_maps/vegas.yaml',

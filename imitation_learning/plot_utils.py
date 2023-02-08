@@ -41,7 +41,8 @@ def plot_imitation(map_name = 'config_example_map', algo_name = 'BehavioralCloni
     for type in types:
         with open(f'logs/{map_name}_{algo_name}_{type}_model.pkl', 'rb') as f:
             trajs[type] = pickle.load(f)
-        ax.plot(trajs[type]["poses_x"], trajs[type]["poses_y"], label=type.replace('_', ' '))
+        plot_label = type.replace('_', ' ').replace('unique', 'personalized')
+        ax.plot(trajs[type]["poses_x"], trajs[type]["poses_y"], label=plot_label)
     ax.set_xlabel('x position')
     ax.set_ylabel('y position')
     ax.set_title(f'Imitation policies learned by {algo_name} in {map_name}')
