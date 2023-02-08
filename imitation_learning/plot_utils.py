@@ -16,7 +16,8 @@ plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
-def plot_experts(map_name = 'config_example_map', vgain_scales=[0.5, 1.0, 2.0, 3.0]):
+
+def plot_experts(x_lo, x_up, y_lo, y_up, map_name = 'config_example_map', vgain_scales=[0.5, 1.0, 2.0, 3.0]):
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))
     trajs = {}
     for vgain_scale in vgain_scales:
@@ -27,6 +28,8 @@ def plot_experts(map_name = 'config_example_map', vgain_scales=[0.5, 1.0, 2.0, 3
     ax.set_ylabel('y position')
     ax.set_title(f'Experts with different top speeds in {map_name}')
     ax.legend()
+    ax.set_xlim(x_lo, x_up)
+    ax.set_ylim(y_lo, y_up)
     plt.show()
 
 
